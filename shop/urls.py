@@ -22,24 +22,27 @@ from main.views import ProductViewSet, TypeViewSet
 
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from django.conf.urls import static
 
 schema_view = get_schema_view(
     openapi.Info(
         title='My API',
-        description='API of advertising app',
+        description='API of shoping app',
         default_version='v1'
     ),
     public=True
 )
 
 router = DefaultRouter()
-router.register('products', ProductViewSet)
+router.register('details', ProductViewSet)
+router.register('edit', ProductViewSet)
 router.register('types', TypeViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('v1/api/', include(router.urls)),
+    path('v1/', include(router.urls)),
     path('v1/account/', include('account.urls')),
-    # path('docs/', schema_view.with_ui('swagger'))
+    path('docs/', schema_view.with_ui('swagger')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
 ]

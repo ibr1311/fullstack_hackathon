@@ -1,4 +1,4 @@
-#!/home/meerim/Desktop/fullstack_hackathon/venv/bin/python3
+#!/Users/macbook/Desktop/fullstack_hackathon/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

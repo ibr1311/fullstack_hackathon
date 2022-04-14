@@ -1,33 +1,50 @@
 from rest_framework import generics, filters
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions, AllowAny
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
-from main.models import Type, Product, ProductImage
-from main.serializers import TypeSerializer, ProductSerializer, ProductImageSerializer
+from main.models import Type, Product, Comment
+from main.serializers import TypeSerializer, ProductSerializer, CommentSerializer
 
 
 class TypeViewSet(ModelViewSet):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
 
+    # def get_permissions(self):
+    #     if self.action in ['create', 'update', 'partial_update', 'destroy']:
+    #         return [IsAdminUser]
+    #     return []
+
+
 
 class ProductViewPagination(LimitOffsetPagination):
     default_limit = 2
 
 
+
+
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_backends = (SearchFilter, DjangoFilterBackend, )
     search_fields = ('model', 'title')
-    ordering_fields = ('type')
     pagination_class = ProductViewPagination
+    filter_fields = ('type', )
+    # def get_permissions(self):
+    #     if self.action == 'get':
+    #         return [AllowAny()]
+    #     if self.action in ['create', 'update', 'partial_update', 'destroy']:
+    #         return [IsAdminUser()]
+    #     else:
+    #         return [IsAdminUser()]
+    #     return []
 
-
-class ProductImageView(generics.ListAPIView):
-    queryset = ProductImage.objects.all()
-    serializer_class = ProductImageSerializer
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+class CommentViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
