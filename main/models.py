@@ -1,6 +1,9 @@
 from django.db import models
 
 # Create your models here.
+from account.models import User
+
+
 class Type(models.Model):
     slug = models.SlugField(max_length=100, primary_key=True)
     name = models.CharField(max_length=150, unique=True)
@@ -25,7 +28,7 @@ class Product(models.Model):
 
 class Comment(models.Model):
     product = models.ForeignKey(Product, related_name='comment', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 

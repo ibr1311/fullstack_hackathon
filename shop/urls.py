@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from main import views
-from main.views import ProductViewSet, TypeViewSet
+from main.views import ProductViewSet, TypeViewSet, CommentViewSet
 
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -37,12 +37,13 @@ router = DefaultRouter()
 router.register('details', ProductViewSet)
 router.register('edit', ProductViewSet)
 router.register('types', TypeViewSet)
+router.register('comment', CommentViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('v1/', include(router.urls)),
     path('v1/account/', include('account.urls')),
     path('docs/', schema_view.with_ui('swagger')),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/', include('rest_framework.urls')),
 
 ]

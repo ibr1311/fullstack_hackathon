@@ -1,4 +1,4 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, permissions
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions, AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -23,6 +23,8 @@ class ProductViewPagination(LimitOffsetPagination):
     default_limit = 2
 
 
+class UsersViewSet:
+    pass
 
 
 class ProductViewSet(ModelViewSet):
@@ -32,19 +34,21 @@ class ProductViewSet(ModelViewSet):
     search_fields = ('model', 'title')
     pagination_class = ProductViewPagination
     filter_fields = ('type', )
-    # def get_permissions(self):
-    #     if self.action == 'get':
-    #         return [AllowAny()]
-    #     if self.action in ['create', 'update', 'partial_update', 'destroy']:
-    #         return [IsAdminUser()]
-    #     else:
-    #         return [IsAdminUser()]
-    #     return []
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny, ]
+        else:
+            self.permission_classes = [IsAdminUser, ]
+
+        return super(self.__class__, self).get_permissions()
 
 
     def get_serializer_context(self):
         return {'request': self.request}
 
+
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
