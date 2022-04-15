@@ -20,7 +20,7 @@ class TypeViewSet(ModelViewSet):
 
 
 class ProductViewPagination(LimitOffsetPagination):
-    default_limit = 2
+    default_limit = 6
 
 
 class UsersViewSet:
@@ -31,7 +31,7 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (SearchFilter, DjangoFilterBackend, )
-    search_fields = ('model', 'title')
+    search_fields = ('model', 'titles')
     pagination_class = ProductViewPagination
     filter_fields = ('type', )
 
@@ -51,4 +51,12 @@ class ProductViewSet(ModelViewSet):
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny, ]
+        else:
+            self.permission_classes = [IsAuthenticated, ]
+
+        return super(self.__class__, self).get_permissions()
 

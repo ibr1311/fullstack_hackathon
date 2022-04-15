@@ -151,7 +151,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = '131197ib@gmail.com'
-EMAIL_HOST_PASSWORD = '1111111'
+EMAIL_HOST_PASSWORD = '055447451-Bermet'
 
 
 
@@ -173,7 +173,7 @@ REST_FRAMEWORK = {
 #CORS_ALLOW_ALL_ORIGINS = True #запросы на ip поступают со всех адресов
 CORS_ALLOW_ORIGINS = [
     'http://localhost:3000',
-    'http://localhost:8000', #указываем ip определенных адресов
+    'http://localhost:3001', #указываем ip определенных адресов
 ]
 
 

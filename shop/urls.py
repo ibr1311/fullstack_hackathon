@@ -46,4 +46,5 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('swagger')),
     path('api-auth/', include('rest_framework.urls')),
 
+
 ]
