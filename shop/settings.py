@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+CORS_ORIGIN_ALLOW_ALL = True
 ROOT_URLCONF = 'shop.urls'
 
 TEMPLATES = [
@@ -172,6 +172,10 @@ REST_FRAMEWORK = {
 
 #CORS_ALLOW_ALL_ORIGINS = True #запросы на ip поступают со всех адресов
 CORS_ALLOW_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:3001', #указываем ip определенных адресов
+]
+CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:3001', #указываем ip определенных адресов
 ]
