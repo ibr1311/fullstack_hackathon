@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'account',
     'main',
+
+    'oauth2_provider',
+	'social_django',
+	'rest_framework_social_oauth2'
 ]
 
 MIDDLEWARE = [
@@ -150,8 +154,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'usekeeva97@gmal.com'
-EMAIL_HOST_PASSWORD = 'Mekameerimainuradil1'
+EMAIL_HOST_USER = 'usekeeva97@gmail.com'
+EMAIL_HOST_PASSWORD = 'Happynewyear21'
 
 
 
@@ -160,6 +164,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+		'rest_framework_social_oauth2.authentication.SocialAuthentication'
 
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -207,4 +213,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+SOCIAL_AUTH_VK_OAUTH2_KEY = '8137770'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'GIUtmMg05O2Ad4RquOhU'
 
+AUTHENTICATION_BACKENDS = [
+
+	'social_core.backends.vk.VKOAuth2',
+	'rest_framework_social_oauth2.backends.DjangoOAuth2',
+	'django.contrib.auth.backends.ModelBackend',
+
+]

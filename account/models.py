@@ -75,26 +75,35 @@ class User(AbstractBaseUser):
             [self.email]
         )
 
-        @property
-        def token(self):
-            """
-            Позволяет получить токен пользователя путем вызова user.token, вместо
-            user._generate_jwt_token(). Декоратор @property выше делает это
-            возможным. token называется "динамическим свойством".
-            """
-            return self._generate_jwt_token()
+    @property
+    def token(self):
+        """
+        Позволяет получить токен пользователя путем вызова user.token, вместо
+        user._generate_jwt_token(). Декоратор @property выше делает это
+        возможным. token называется "динамическим свойством".
+        """
+        return self._generate_jwt_token()
 
 
-        def _generate_jwt_token(self):
-            """
-            Генерирует веб-токен JSON, в котором хранится идентификатор этого
-            пользователя, срок действия токена составляет 1 день от создания
-            """
-            dt = datetime.now() + timedelta(days=1)
+    def _generate_jwt_token(self):
+        """
+        Генерирует веб-токен JSON, в котором хранится идентификатор этого
+        пользователя, срок действия токена составляет 1 день от создания
+        """
+        dt = datetime.now() + timedelta(days=1)
 
-            token = jwt.encode({
-                'id': self.pk,
-                'exp': int(dt.strftime('%s'))
-            }, settings.SECRET_KEY, algorithm='HS256')
+        token = jwt.encode({
+            'id': self.pk,
+            'exp': int(dt.strftime('%s'))
+        }, settings.SECRET_KEY, algorithm='HS256')
 
-            return token.decode('utf-8')
+        return token.decode('utf-8')
+
+    def send_new_password(self, new_password):
+        message = f'Ваш новый пароль: {new_password}'
+        send_mail(
+            'Восстановление пароля',
+            message,
+            'test@gmail.com',
+            [self.email]
+        )
