@@ -1,4 +1,3 @@
-from rest_framework import generics, filters, permissions
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions, AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -7,6 +6,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from main.models import Type, Product, Comment
 from main.serializers import TypeSerializer, ProductSerializer, CommentSerializer
 
+from django_filters import rest_framework as  filters
 
 class TypeViewSet(ModelViewSet):
     queryset = Type.objects.all()
@@ -23,8 +23,16 @@ class ProductViewPagination(LimitOffsetPagination):
     default_limit = 6
 
 
-class UsersViewSet:
-    pass
+
+class ProductFilter(filters.FilterSet):
+    price_from = filters.NumberFilter(field_name='price',
+                                      lookup_expr='gte')
+    price_to = filters.NumberFilter(field_name='price',
+                                    lookup_expr='lte')
+
+    class Meta:
+        model = Product
+        fields = ['type']
 
 
 class ProductViewSet(ModelViewSet):
@@ -33,7 +41,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = (SearchFilter, DjangoFilterBackend, )
     search_fields = ('model', 'titles')
     pagination_class = ProductViewPagination
-    filter_fields = ('type', )
+    filterset_class = ProductFilter
 
     def get_permissions(self):
         if self.request.method == 'GET':

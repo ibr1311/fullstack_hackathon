@@ -10,5 +10,6 @@ urlpatterns = [
     # path('logout/', LogoutView.as_view(), name="signout"),
     path('forgot_pass/', ForgotPasswordView.as_view(), name="forgot-password"),
     path('change_password/', ChangePasswordView.as_view(), name="change-password"),
+
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]

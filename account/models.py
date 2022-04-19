@@ -6,6 +6,11 @@ from django.core.mail import send_mail
 from django.db import models
 
 from shop import settings
+from django.dispatch import receiver
+from django.urls import reverse
+
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail
 
 
 class UserManager(BaseUserManager):
@@ -75,35 +80,51 @@ class User(AbstractBaseUser):
             [self.email]
         )
 
-    @property
-    def token(self):
-        """
-        Позволяет получить токен пользователя путем вызова user.token, вместо
-        user._generate_jwt_token(). Декоратор @property выше делает это
-        возможным. token называется "динамическим свойством".
-        """
-        return self._generate_jwt_token()
-
-
-    def _generate_jwt_token(self):
-        """
-        Генерирует веб-токен JSON, в котором хранится идентификатор этого
-        пользователя, срок действия токена составляет 1 день от создания
-        """
-        dt = datetime.now() + timedelta(days=1)
-
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': int(dt.strftime('%s'))
-        }, settings.SECRET_KEY, algorithm='HS256')
-
-        return token.decode('utf-8')
-
-    def send_new_password(self, new_password):
-        message = f'Ваш новый пароль: {new_password}'
-        send_mail(
-            'Восстановление пароля',
-            message,
-            'test@gmail.com',
-            [self.email]
-        )
+    # @property
+    # def token(self):
+    #     """
+    #     Позволяет получить токен пользователя путем вызова user.token, вместо
+    #     user._generate_jwt_token(). Декоратор @property выше делает это
+    #     возможным. token называется "динамическим свойством".
+    #     """
+    #     return self._generate_jwt_token()
+    #
+    #
+    # def _generate_jwt_token(self):
+    #     """
+    #     Генерирует веб-токен JSON, в котором хранится идентификатор этого
+    #     пользователя, срок действия токена составляет 1 день от создания
+    #     """
+    #     dt = datetime.now() + timedelta(days=1)
+    #
+    #     token = jwt.encode({
+    #         'id': self.pk,
+    #         'exp': int(dt.strftime('%s'))
+    #     }, settings.SECRET_KEY, algorithm='HS256')
+    #
+    #     return token.decode('utf-8')
+    #
+    # def send_new_password(self, new_password):
+    #     message = f'Ваш новый пароль: {new_password}'
+    #     send_mail(
+    #         'Восстановление пароля',
+    #         message,
+    #         'test@gmail.com',
+    #         [self.email]
+    #     )
+    #
+    # @receiver(reset_password_token_created)
+    # def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    #     email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'),
+    #                                                    reset_password_token.key)
+    #
+    #     send_mail(
+    #         # title:
+    #         "Password Reset for {title}".format(title="Some website title"),
+    #         # message:
+    #         email_plaintext_message,
+    #         # from:
+    #         "noreply@somehost.local",
+    #         # to:
+    #         [reset_password_token.user.email]
+    #     )
