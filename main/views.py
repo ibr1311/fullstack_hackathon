@@ -18,12 +18,6 @@ class TypeViewSet(ModelViewSet):
     #     return []
 
 
-
-class ProductViewPagination(LimitOffsetPagination):
-    default_limit = 6
-
-
-
 class ProductFilter(filters.FilterSet):
     price_from = filters.NumberFilter(field_name='price',
                                       lookup_expr='gte')
@@ -40,7 +34,6 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     filter_backends = (SearchFilter, DjangoFilterBackend, )
     search_fields = ('model', 'titles')
-    pagination_class = ProductViewPagination
     filterset_class = ProductFilter
 
     def get_permissions(self):

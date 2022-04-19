@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'account',
     'main',
-    'django_rest_passwordreset',
+
+    'django_rest_passwordreset'
 
 ]
 
@@ -148,6 +149,7 @@ AUTH_USER_MODEL = 'account.User'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
@@ -165,7 +167,7 @@ REST_FRAMEWORK = {
 
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': 6,
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.AllowAny'
     # ]
