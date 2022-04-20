@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModel
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
-from main.models import Type, Product, Comment
-from main.serializers import TypeSerializer, ProductSerializer, CommentSerializer
+from main.models import Type, Product, Comment, ProductLikes
+from main.serializers import TypeSerializer, ProductSerializer, CommentSerializer, LikeSerializer
 from rest_framework.response import Response
 from django_filters import rest_framework as  filters
 
@@ -64,6 +64,25 @@ def comment_product_api(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     if request.method == 'POST':
         serializer = CommentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST', 'GET'])
+def like_product_api(request, pk):
+    try:
+        likeproduct = get_object_or_404(Product, pk=pk)
+    except Product.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        likes = ProductLikes.objects.filter(likeproduct=likeproduct)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        serializer = LikeSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

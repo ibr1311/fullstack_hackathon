@@ -52,6 +52,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('v1/details/<int:pk>/comment/', views.comment_product_api),
+    path('v1/details/<int:pk>/add-like/', views.like_product_api),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

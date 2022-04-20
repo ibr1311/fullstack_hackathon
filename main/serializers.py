@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from main.models import Type, Product, Comment
+from main.models import Type, Product, Comment, ProductLikes
 
 
 class TypeSerializer(serializers.ModelSerializer):
@@ -12,12 +12,18 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'product', 'name', 'text', 'date_added')
 
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductLikes
+        fields = ('likeusers', 'likeproduct')
+
 class ProductSerializer(serializers.ModelSerializer):
+    like = LikeSerializer(many=True)
     comment = CommentSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ('id', 'type', 'model', 'charac', 'titles', 'desc', 'price', 'image', 'comment')
+        fields = ('id', 'type', 'model', 'charac', 'titles', 'desc', 'price', 'image', 'comment', 'like')
 
         def _get_image_url(self, obj):
             if obj.image:
@@ -33,5 +39,4 @@ class ProductSerializer(serializers.ModelSerializer):
             representation = super().to_representation(instance)
             representation['image'] = self._get_image_url(instance)
             return representation
-
 

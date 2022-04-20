@@ -35,3 +35,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.product.model, self.name)
+
+class ProductLikes(models.Model):
+    likeusers = models.ManyToManyField(User)
+    likeproduct = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name='like')
