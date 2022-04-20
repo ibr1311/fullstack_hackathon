@@ -7,12 +7,17 @@ class TypeSerializer(serializers.ModelSerializer):
         model = Type
         fields = '__all__'
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'product', 'name', 'text', 'date_added')
 
 class ProductSerializer(serializers.ModelSerializer):
+    comment = CommentSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ('id', 'type', 'model', 'charac', 'titles', 'desc', 'price', 'image')
+        fields = ('id', 'type', 'model', 'charac', 'titles', 'desc', 'price', 'image', 'comment')
 
         def _get_image_url(self, obj):
             if obj.image:
@@ -29,9 +34,4 @@ class ProductSerializer(serializers.ModelSerializer):
             representation['image'] = self._get_image_url(instance)
             return representation
 
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = '__all__'
 

@@ -57,10 +57,19 @@ class ForgotPasswordView(APIView):
             return Response('Вам на почту выслан новый пароль')
 
 
+# class ChangePasswordView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def post(self, request):
+#         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.set_new_password()
+#             return Response('Пароль успешно обновлен')
+
+
 class ChangePasswordView(APIView):
-    permission_classes = [IsAuthenticated]
-    def post(self, request):
-        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.set_new_password()
-            return Response('Пароль успешно обновлен')
+    serializer_class = ChangePasswordSerializer
+    model = get_user_model() # your user model
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        return self.request.user

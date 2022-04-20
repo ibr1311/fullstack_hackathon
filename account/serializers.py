@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model, authenticate, password_validation
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -114,29 +114,90 @@ class ForgotPasswordSerializer(serializers.Serializer):
         user.set_password(random_password)
         user.send_new_password(random_password)
 
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128, write_only=True, required=True)
+    new_password1 = serializers.CharField(max_length=128, write_only=True, required=True)
+    new_password2 = serializers.CharField(max_length=128, write_only=True, required=True)
 
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError(
+                ('Your old password was entered incorrectly. Please enter it again.')
+            )
+        return value
+
+    def validate(self, data):
+        if data['new_password1'] != data['new_password2']:
+            raise serializers.ValidationError({'new_password2': ("The two password fields didn't match.")})
+        password_validation.validate_password(data['new_password1'], self.context['request'].user)
+        return data
+
+    def save(self, **kwargs):
+        password = self.validated_data['new_password1']
+        user = self.context['request'].user
+        user.set_password(password)
+        user.save()
+        return user
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-    password_confirm = serializers.CharField(required=True)
+    new_password = serializers.CharField(write_only=True)
+    old_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
-    def validate_old_password(self, old_password):
-        user = self.context['request'].user
-        if not user.check_password(old_password):
-            raise serializers.ValidationError('Укажите верный пароль')
-        return old_password
 
-    def validate(self, attrs):
-        password1 = attrs.get('new_password')
-        password2 = attrs.get('password_confirm')
-        if password1 != password2:
-            raise serializers.ValidationError('Пароли не совпадают')
-        return attrs
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'password', 'old_password', 'new_password','confirm_password']
 
-    def set_new_password(self):
-        user = self.context['request'].user
-        password = self.validated_data.get('new_password')
-        user.set_password(password)
 
+
+    def update(self, instance, validated_data):
+
+        instance.password = validated_data.get('password', instance.password)
+
+        if not validated_data['new_password']:
+              raise serializers.ValidationError({'new_password': 'not found'})
+
+        if not validated_data['old_password']:
+              raise serializers.ValidationError({'old_password': 'not found'})
+
+        if not instance.check_password(validated_data['old_password']):
+              raise serializers.ValidationError({'old_password': 'wrong password'})
+
+        if validated_data['new_password'] != validated_data['confirm_password']:
+            raise serializers.ValidationError({'passwords': 'passwords do not match'})
+
+        if validated_data['new_password'] == validated_data['confirm_password'] and instance.check_password(validated_data['old_password']):
+            # instance.password = validated_data['new_password']
+            print(instance.password)
+            instance.set_password(validated_data['new_password'])
+            print(instance.password)
+            instance.save()
+            return instance
+        return instance
+
+# class ChangePasswordSerializer(serializers.Serializer):
+#     old_password = serializers.CharField(required=True)
+#     new_password = serializers.CharField(required=True)
+#     password_confirm = serializers.CharField(required=True)
+#
+#     def validate_old_password(self, old_password):
+#         user = self.context['request'].user
+#         if not user.check_password(old_password):
+#             raise serializers.ValidationError('Укажите верный пароль')
+#         return old_password
+#
+#     def validate(self, attrs):
+#         password1 = attrs.get('new_password')
+#         password2 = attrs.get('password_confirm')
+#         if password1 != password2:
+#             raise serializers.ValidationError('Пароли не совпадают')
+#         return attrs
+#
+#     def set_new_password(self):
+#         user = self.context['request'].user
+#         password = self.validated_data.get('new_password')
+#         user.set_password(password)
+#
 

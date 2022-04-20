@@ -1,11 +1,14 @@
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoModelPermissions, AllowAny
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination
 from main.models import Type, Product, Comment
 from main.serializers import TypeSerializer, ProductSerializer, CommentSerializer
-
+from rest_framework.response import Response
 from django_filters import rest_framework as  filters
 
 class TypeViewSet(ModelViewSet):
@@ -49,15 +52,19 @@ class ProductViewSet(ModelViewSet):
         return {'request': self.request}
 
 
-class CommentViewSet(ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            self.permission_classes = [AllowAny, ]
-        else:
-            self.permission_classes = [IsAuthenticated, ]
-
-        return super(self.__class__, self).get_permissions()
-
+@api_view(['POST', 'GET', 'DELETE'])
+def comment_product_api(request, pk):
+    try:
+        product = get_object_or_404(Product, pk=pk)
+    except Product.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        comments = Comment.objects.filter(product=product)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        serializer = CommentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from main import views
-from main.views import ProductViewSet, TypeViewSet, CommentViewSet
+from main.views import ProductViewSet, TypeViewSet
 
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -42,7 +42,7 @@ router = DefaultRouter()
 router.register('details', ProductViewSet)
 router.register('edit', ProductViewSet)
 router.register('types', TypeViewSet)
-router.register('comment', CommentViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -51,6 +51,7 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('swagger')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('v1/details/<int:pk>/comment/', views.comment_product_api),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
